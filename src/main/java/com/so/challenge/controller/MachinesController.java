@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.so.challenge.dto.MachineDto;
 import com.so.challenge.dto.MachineStatusDto;
+import com.so.challenge.dto.StatsValueDto;
 import com.so.challenge.model.Machine;
+import com.so.challenge.service.MachineParameterService;
 import com.so.challenge.service.MachineService;
 
 import org.modelmapper.ModelMapper;
@@ -32,21 +35,23 @@ public class MachinesController {
 	@Autowired
 	private MachineService machineService;
 
+	@Autowired
+	private MachineParameterService parameterService;
+
 	@GetMapping("")
-	public Collection<MachineDto> getMachines() {
+	public List<MachineDto> getMachines() {
 		// TODO: this could be reused
 		ModelMapper modelMapper = new ModelMapper();
 		TypeMap<Machine, MachineDto> machineMapper = modelMapper.createTypeMap(Machine.class, MachineDto.class);
 
-		Collector<MachineDto, ?, Collection<MachineDto>> toList = Collectors.toCollection(ArrayList<MachineDto>::new);
-		return machineService.getMachines().stream().map(machineMapper::map).collect(toList);
-	}
+		Collector<MachineDto, ?, List<MachineDto>> toList = Collectors.toCollection(ArrayList<MachineDto>::new);
+		List<MachineDto> machines = machineService.getMachines().stream().map(machineMapper::map).collect(toList);
 
-	@GetMapping("/{key}")
-	public MachineDto getMachineByKey(@PathVariable String key) {
-		MachineDto machine = new MachineDto();
-		machine.setKey(key);
-		return machine;
+		machines.forEach((MachineDto machine) -> {
+			List<StatsValueDto> stats = this.parameterService.getParameterStatistics(machine.getKey(), null);
+		});
+		
+		return machines;
 	}
 
 	@PostMapping("/status")

@@ -29,18 +29,9 @@ public class MachineServiceImpl implements MachineService {
     @Override
     public List<Machine> getMachines() {
         this.log.debug("Loading all machines");
-        Machine machine = new Machine();
-        machine.setKey("key");
-        machine.setName("name");
-        machineRepository.save(machine);
+        List<Machine> machines = machineRepository.findAll();
 
-        return machineRepository.findAll();
-    }
-
-    @Override
-    public Machine getMachineByKey(String machineKey) {
-        // TODO Auto-generated method stub
-        return null;
+        return machines;
     }
 
     @Override
@@ -55,6 +46,8 @@ public class MachineServiceImpl implements MachineService {
             param.setTimestamp(timestamp);
             param.setMachineKey(machineKey);
             param.setParameterKey(key);
+
+            // TODO: bit of a brittle way to do things but works for now
             if (value instanceof Double) {
                 param.setRealValue((Double) value);
             }

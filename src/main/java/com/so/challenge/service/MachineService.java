@@ -12,13 +12,6 @@ public interface MachineService {
     List<Machine> getMachines();
 
     /**
-     * Get a machine by its key
-     * @param machineKey
-     * @return
-     */
-    Machine getMachineByKey(String machineKey);
-
-    /**
      * Update the parameters for a machine
      */
     void updateMachineParameters(String machineKey, Map<String, Object> parameters);
